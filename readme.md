@@ -59,6 +59,8 @@ func main() {
 
 其他使用示例可参考 \*\_test.go 中的测试用例， 我们的每个函数都有测试用例， 部分函数还使用了 Fuzz 模糊测试技术 来确保我们函数的可靠和高效！ 同时也能帮助我们发现一些潜在的风险等......
 
+也可参考 go pkg 文档,地址: https://pkg.go.dev/github.com/tekintian/go-str-utils
+
 ## go 编码规范
 
 每个函数需要有对应的测试函数,以确保函数的可靠性, 编码规范请参考 go 官方的 [Effective Go](https://go.dev/doc/effective_go.html)
