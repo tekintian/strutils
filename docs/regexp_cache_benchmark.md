@@ -34,17 +34,17 @@ goos: darwin
 goarch: amd64
 pkg: github.com/tekintian/go-str-utils
 cpu: Intel(R) Core(TM) i7-4770HQ CPU @ 2.20GHz
-BenchmarkRegexp-8                     30         418491027 ns/op
-BenchmarkRegexp-8                     28         423420166 ns/op
-BenchmarkRegexp-8                     27         474324839 ns/op
-BenchmarkCacheRegexp-8           4344793              2906 ns/op
-BenchmarkCacheRegexp-8           3867787              3047 ns/op
-BenchmarkCacheRegexp-8           3954852              3067 ns/op
-BenchmarkNormalRegexp-8           658766             18057 ns/op
-BenchmarkNormalRegexp-8           671868             18469 ns/op
-BenchmarkNormalRegexp-8           707373             17390 ns/op
+BenchmarkRegexp-8                     27         448754064 ns/op
+BenchmarkRegexp-8                     26         494853641 ns/op
+BenchmarkRegexp-8                     24         509278961 ns/op
+BenchmarkCacheRegexp-8           4153660              2895 ns/op
+BenchmarkCacheRegexp-8           4038694              2857 ns/op
+BenchmarkCacheRegexp-8           4177581              2861 ns/op
+BenchmarkNormalRegexp-8           700718             15940 ns/op
+BenchmarkNormalRegexp-8           759853             15823 ns/op
+BenchmarkNormalRegexp-8           711022             15823 ns/op
 PASS
-ok      github.com/tekintian/go-str-utils       122.823s
+ok      github.com/tekintian/go-str-utils       128.967s
 ```
 
 说明:
