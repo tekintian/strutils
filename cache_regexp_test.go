@@ -7,8 +7,8 @@ import (
 )
 
 func TestRegex(t *testing.T) {
-	l,cnt:=concurentDemo()
-	t.Logf("并发数:%d, 缓存命中数:%d ",l,cnt)
+	l, cnt := concurentDemo()
+	t.Logf("并发数:%d, 缓存命中数:%d ", l, cnt)
 }
 
 // 并发测试
@@ -20,14 +20,14 @@ func concurentDemo() (int, int) {
 	for i := 0; i < l; i++ {
 		// 开启协程执行
 		go func() {
-			reg, ct, err := getExp(pattern)
+			reg, err := GetRegexp(pattern)
 			if err != nil {
 				log.Fatal(err)
 				return
 			}
 			rb := reg.FindAll(b, 1)
-			if len(rb[0]) > 0 && ct > 0 {
-				ch <- ct
+			if len(rb[0]) > 0 {
+				ch <- 1
 			} else {
 				ch <- 0
 			}
@@ -45,10 +45,9 @@ func concurentDemo() (int, int) {
 func BenchmarkRegexp(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		concurentDemo()
-	    //b.Logf("并发数:%d, 缓存命中数:%d ",l,cnt)
+		//b.Logf("并发数:%d, 缓存命中数:%d ",l,cnt)
 	}
 }
-
 
 var regStr string = `<(script|style)>([\S\s]+?)<(/|/\s+)(script|style)>`
 var txt string = `

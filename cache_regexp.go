@@ -10,33 +10,29 @@ import (
 )
 
 var (
-	regexMu  = sync.RWMutex{}                  // 读写锁
-	regexMap = make(map[string]*regexp.Regexp) // 用来缓存正则编译对象的map
+	mu       sync.RWMutex                      // 读写锁
+	expCache = make(map[string]*regexp.Regexp) // 初始化expMap容器
 )
 
 // 返回 `pattern` 对应的 *regexp.Regexp 对象, 使用内存缓存, 线程安全.
 func GetRegexp(pattern string) (*regexp.Regexp, error) {
-	exp, _, err := getExp(pattern)
-	return exp, err
+	mu.RLock()
+	exp, ok := expCache[pattern]
+	mu.RUnlock()
+	if ok {
+		return exp, nil
+	}
+	return storeExp(pattern)
 }
 
-// ct 这个是缓存命中次数
-func getExp(pattern string) (exp *regexp.Regexp, ct int, err error) {
-	// regexMu.RLock()
-	exp, ok := regexMap[pattern]
-	// regexMu.RUnlock()
-	if ok {
-		ct++
-		return
-	}
+func storeExp(pattern string) (*regexp.Regexp, error) {
 	// 不存在缓存,编译正则然后写入map缓存
-	if exp, err = regexp.Compile(pattern); err != nil {
-		err = fmt.Errorf(`regexp.Compile failed for pattern "%s" errors: %v`, pattern, err)
-		return
+	mu.Lock()         // 加锁
+	defer mu.Unlock() //退出时释放锁
+	exp, err := regexp.Compile(pattern)
+	if err != nil {
+		return nil, fmt.Errorf(`regexp.Compile failed for pattern "%s" errors: %v`, pattern, err)
 	}
-	// 使用写入锁缓存正则编译对象
-	regexMu.Lock() // 写锁
-	regexMap[pattern] = exp
-	regexMu.Unlock()
-	return
+	expCache[pattern] = exp
+	return exp, nil
 }
