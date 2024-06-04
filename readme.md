@@ -32,6 +32,14 @@
 - 这个工具就是为了提高高并发和同一个正则多次使用场景下的正则执行效率，因为字符串处理中经常要用到正则
 - [正则编译缓存基准测试结果请点击这里查看](docs/regexp_cache_benchmark.md)
 
+5. 字符串条件判断相关函数 condition.go
+
+- StrIsChinese 判断字符串是否是中文
+- StrContainsChinese 是否包含中文
+- StrContainsContinuousNum 是否包含连续的数字 可自定义连续数字的长度,默认 2
+
+
+
 ## 使用方法
 
 go 版本环境, 最低 1.16, 我们建议你使用官方最新正式版, 这样就可以使用很多高级特性,比如 1.21 版本以上中的 slices 内置包等......
