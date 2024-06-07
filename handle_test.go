@@ -51,3 +51,97 @@ func FuzzSubStr(f *testing.F) {
 		}
 	})
 }
+
+type ieData struct {
+	input    string
+	expected string
+}
+
+func TestTitle(t *testing.T) {
+	list := []*ieData{
+		{input: "_", expected: "_"},
+		{input: "abc", expected: "Abc"},
+		{input: "ABC", expected: "ABC"},
+		{input: "", expected: ""},
+		{input: " abc", expected: " abc"},
+	}
+	for _, v := range list {
+		t.Run(v.input, func(t *testing.T) {
+			ret := strutils.Title(v.input)
+			if ret != v.expected {
+				t.Fatalf("Expected %v, got %v", v.expected, ret)
+			}
+		})
+	}
+}
+
+func TestUntitle(t *testing.T) {
+	list := []*ieData{
+		{input: "_", expected: "_"},
+		{input: "Abc", expected: "abc"},
+		{input: "ABC", expected: "aBC"},
+		{input: "", expected: ""},
+		{input: " abc", expected: " abc"},
+	}
+
+	for _, v := range list {
+		t.Run(v.input, func(t *testing.T) {
+			ret := strutils.Untitle(v.input)
+			if ret != v.expected {
+				t.Fatalf("Expected %v, got %v", v.expected, ret)
+			}
+		})
+	}
+}
+
+func TestSafeString(t *testing.T) {
+	list := []*ieData{
+		{input: " hello \n\r\tworld", expected: "_hello____world"},
+		{input: "_", expected: "_"},
+		{input: "a-b-c", expected: "a_b_c"},
+		{input: "123abc", expected: "_123abc"},
+		{input: "汉abc", expected: "_abc"},
+		{input: "汉a字", expected: "_a_"},
+		{input: "a_B C", expected: "a_B_C"},
+		{input: "A#B#C", expected: "A_B_C"},
+		{input: "_123", expected: "_123"},
+		{input: "", expected: ""},
+		{input: "\t", expected: "_"},
+		{input: "\n", expected: "_"},
+	}
+	for _, v := range list {
+		t.Run(v.input, func(t *testing.T) {
+			ret := strutils.SafeString(v.input)
+			if ret != v.expected {
+				t.Fatalf("Expected %v, got %v", v.expected, ret)
+			}
+		})
+	}
+}
+
+func TestTrimWhiteSpace(t *testing.T) {
+	list := []*ieData{
+		{input: " hello \n\r\tworld", expected: "helloworld"},
+		{input: " a-b-c\r\t", expected: "a-b-c"},
+		{input: "\t\r\n\n12 3a \nbc", expected: "123abc"},
+	}
+	for _, v := range list {
+		t.Run(v.input, func(t *testing.T) {
+			ret := strutils.TrimWhiteSpace(v.input)
+			if ret != v.expected {
+				t.Fatalf("Expected %v, got %v", v.expected, ret)
+			}
+		})
+	}
+}
+
+func TestIndex(t *testing.T) {
+	list := []string{"a", "b", "c"}
+
+	if ret := strutils.Index(list, "b"); ret != 1 {
+		t.Fatalf("Expected 1, got %v", ret)
+	}
+	if ret := strutils.Index(list, "d"); ret != -1 {
+		t.Fatalf("Expected -1, got %v", ret)
+	}
+}

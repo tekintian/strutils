@@ -137,3 +137,21 @@ func LcFirst(str string) string {
 	}
 	return string(rs)
 }
+
+// 将字符串的第一个字母转换为大写
+func Title(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+
+	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+// 将字符串的第一个字母转换为小写
+func Untitle(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+
+	return strings.ToLower(s[:1]) + s[1:]
+}
