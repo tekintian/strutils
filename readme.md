@@ -39,6 +39,8 @@
 - StrContainsContinuousNum 是否包含连续的数字 可自定义连续数字的长度,默认 2
 
 
+更多的函数使用方法请参考PKG文档: https://pkg.go.dev/github.com/tekintian/go-str-utils#pkg-index
+
 
 ## 使用方法
 
