@@ -23,7 +23,9 @@ func init() {
 
 // 返回 `pattern` 对应的 *regexp.Regexp 对象, 使用原子级别缓存,绝对线程安全!
 func GetRegexp(pattern string) (*regexp.Regexp, error) {
+	mu.Lock()
 	exp := regexpCache.Load().(expMap)[pattern]
+	mu.Unlock()
 	if exp != nil {
 		return exp, nil
 	}
