@@ -33,7 +33,9 @@ func TestStr2Int64Slice(t *testing.T) {
 		expected []int64
 	}{
 		{str: "12.3你好, 456", expected: []int64{12, 456}},
-		{str: "hi123你好88", expected: []int64{123, 88}},
+		{str: "hi123你好88", expected: []int64{123}},
+		{str: "hi123, 你好88", expected: []int64{123, 88}},
+		{str: "hi123,你好88", expected: []int64{123, 88}},
 	}
 	for _, v := range cases {
 		t.Run(v.str, func(t *testing.T) {
