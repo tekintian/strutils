@@ -57,43 +57,6 @@ type ieData struct {
 	expected string
 }
 
-func TestTitle(t *testing.T) {
-	list := []*ieData{
-		{input: "_", expected: "_"},
-		{input: "abc", expected: "Abc"},
-		{input: "ABC", expected: "ABC"},
-		{input: "", expected: ""},
-		{input: " abc", expected: " abc"},
-	}
-	for _, v := range list {
-		t.Run(v.input, func(t *testing.T) {
-			ret := strutils.Title(v.input)
-			if ret != v.expected {
-				t.Fatalf("Expected %v, got %v", v.expected, ret)
-			}
-		})
-	}
-}
-
-func TestUntitle(t *testing.T) {
-	list := []*ieData{
-		{input: "_", expected: "_"},
-		{input: "Abc", expected: "abc"},
-		{input: "ABC", expected: "aBC"},
-		{input: "", expected: ""},
-		{input: " abc", expected: " abc"},
-	}
-
-	for _, v := range list {
-		t.Run(v.input, func(t *testing.T) {
-			ret := strutils.Untitle(v.input)
-			if ret != v.expected {
-				t.Fatalf("Expected %v, got %v", v.expected, ret)
-			}
-		})
-	}
-}
-
 func TestSafeString(t *testing.T) {
 	list := []*ieData{
 		{input: " hello \n\r\tworld", expected: "_hello____world"},

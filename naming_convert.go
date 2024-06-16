@@ -1,3 +1,8 @@
+/*
+naming conventions utils
+命名转换相关实用函数
+@author tekintian@gmail.com
+*/
 package strutils
 
 import (
@@ -5,19 +10,6 @@ import (
 	"fmt"
 	"strings"
 )
-
-// naming conventions utils
-// 命名转换相关实用函数
-
-// 大驼峰命名 单词首字母大写 下划线或者中划线链接的字符串转换为首字母大写的字符串
-func CamelStr(str string) string {
-	return camelConvert(str, true)
-}
-
-// 小驼峰命名  第一个单词首字母小写,其他首字母大写
-func SmallCamelStr(str string) string {
-	return camelConvert(str, false)
-}
 
 // 驼峰命名转换
 // @author tekintian <tekintian@gmail.com>
@@ -44,6 +36,26 @@ func camelConvert(str string, isBig bool) string {
 		// 单词首字母非大写字母的情况不需要处理
 	}
 	return strings.Join(tmp, "") // 将切片拼接为字符串后返回
+}
+
+// 大驼峰命名 单词首字母大写 下划线或者中划线链接的字符串转换为首字母大写的字符串
+func CamelStr(str string) string {
+	return camelConvert(str, true)
+}
+
+// 大驼峰 CamelStr的别名
+func CaseCamel(str string) string {
+	return camelConvert(str, true)
+}
+
+// 小驼峰命名  第一个单词首字母小写,其他首字母大写
+func SmallCamelStr(str string) string {
+	return camelConvert(str, false)
+}
+
+// 小驼峰 SmallCamelStr的别名
+func CaseCamelLower(str string) string {
+	return camelConvert(str, false)
 }
 
 // 即将单词首字母小写, 多个单词使用下划线链接, 如 UserName 转换为 user_name
@@ -114,6 +126,12 @@ func UcWords(str string) string {
 	return buf.String()
 }
 
+// 将字符串s中所有单词的第一个字母转换为大写
+// @author tekintian <tekintian@gmail.com>
+func Capitalize(s string) string {
+	return UcWords(s)
+}
+
 // 首字母大写 Upper case first letter
 func UcFirst(str string) string {
 	if len(str) < 1 {
@@ -138,20 +156,80 @@ func LcFirst(str string) string {
 	return string(rs)
 }
 
-// 将字符串的第一个字母转换为大写
+// 转换字符串中单词的首字母大小写
+//
+//		s 待转换的字符串
+//		sep 单词分隔符 如果指定了分隔符且不为空同时字符串中包含指定分隔符,则返回的字符串中的单词将会带上这个分隔符,否则分隔符全部会被设置为空
+//	    isUpper 是否转换为大写 true 是, false 否(转换为小写)
+//
+// 使用示例:
+//
+//	ConvertWrodsFirstUpperLower("hello word","",true) // HelloWorld
+//	ConvertWrodsFirstUpperLower("Hello Word"," ",false) // hello world
+//
+// 返回转换后的字符串
+func ConvertWrodsFirstUpperLower(s, sep string, isUpper bool) string {
+	// 定义切割字符串的正则
+	regexp := `(\s+|\n|\r|\t|\f|\v|_|-|\b)`
+	// 如果sep不为空,且字符串中包含用户提供的分隔符,则将分隔符放入到正则中
+	if sep != "" && strings.Contains(s, sep) {
+		regexp = fmt.Sprintf(`(%s|\s+|\n|\r|\t|\f|\v|_|-|\b)`, sep)
+	} else {
+		sep = "" // 其他情况将分隔符设置为空
+	}
+	re, err := GetRegexp(regexp)
+	if err != nil {
+		return s
+	}
+	ss := re.Split(s, -1) // 按照上面的正则切割字符串
+	var sb strings.Builder
+	sb.Grow(len(ss)) // 指定容量为切割后的切片个数
+	for i, v := range ss {
+		if v == "" {
+			continue
+		}
+		r0 := []rune(v)[0]
+		// 如果单词第一个rune是小写或者大写字母  大写字母 65-90  小写字母97-122
+		if r0 <= 122 && ((r0 >= 'A' && r0 <= 'Z') || (r0 >= 'a' && r0 <= 'z')) {
+			wr := false
+			if isUpper && 'a' <= r0 && r0 <= 'z' {
+				wr = true
+				r0 -= 'a' - 'A' // 转换为大写 小写字母比大写字母的ascii码大32  注意这里的转换大小写必须的前提
+			} else if !isUpper && 'A' <= r0 && r0 <= 'Z' {
+				wr = true
+				r0 += 'a' - 'A' // 转换为小写
+			}
+			if wr {
+				sb.WriteRune(r0)                      // 将转换后的单词第一个rune写入缓存
+				sb.WriteString(string([]rune(v)[1:])) // 写入剩余的rune写入到缓存
+			} else {
+				sb.WriteString(v)
+			}
+		} else { // 非小写或者大写字母,直接原样写入
+			sb.WriteString(v)
+		}
+		if sep != "" && i < len(ss)-1 {
+			sb.WriteString(sep) // 写入单词分隔符
+		}
+	}
+	if sb.Len() > 0 {
+		return sb.String()
+	}
+	return s // 根据单词分隔符切割后的字符为空,原样返回
+}
+
+// 将字符串中所有单词的第一个字母转换为大写
 func Title(s string) string {
 	if len(s) == 0 {
 		return s
 	}
-
-	return strings.ToUpper(s[:1]) + s[1:]
+	return ConvertWrodsFirstUpperLower(s, " ", true)
 }
 
-// 将字符串的第一个字母转换为小写
-func Untitle(s string) string {
+// 将字符串中所有单词的第一个字母转换为小写
+func UnTitle(s string) string {
 	if len(s) == 0 {
 		return s
 	}
-
-	return strings.ToLower(s[:1]) + s[1:]
+	return ConvertWrodsFirstUpperLower(s, " ", false)
 }
