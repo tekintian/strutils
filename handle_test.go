@@ -11,11 +11,22 @@ import (
 )
 
 func TestSubstr(t *testing.T) {
-	txt := "你好go语言!"
-	if ret := strutils.Substr(txt, 4, 2); ret == "go语言" {
-		t.Log("ok")
-	} else {
-		t.Fatalf("test failed, expected: 你好go got: %v", ret)
+	cases := []struct {
+		str     string
+		start   int
+		lengths int
+		out     string
+	}{
+		{str: "530102001", start: 3, lengths: 1, out: "0"},
+		{str: "530102001", start: 3, lengths: 3, out: "010"},
+		{str: "你好go语言!", start: 3, lengths: 2, out: "go"},
+		{str: "你好go语言!", start: 3, lengths: 12, out: "go语言!"},
+		{str: "hello world!", start: 7, lengths: 5, out: "world"},
+	}
+	for _, v := range cases {
+		if ret := strutils.Substr(v.str, v.start, v.lengths); ret != v.out {
+			t.Fatalf("Substr %v failed, want %v , got %v ", v.str, v.out, ret)
+		}
 	}
 }
 
