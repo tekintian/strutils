@@ -5,13 +5,21 @@ import "strings"
 // 字符串操作相关函数
 
 // 截取指定长度的字符串 支持中文截取
-// length 要截取的字符串长度, 此处使用uint16 0--65535长度足够了! 这里避免使用 int 或者 int64 可省去判断负数和少用内存 这样代码更精简更高效
-func Substr(str string, length int) string {
+//
+//		length 要截取的字符串长度
+//	 	offsets 偏移量 可选参数,默认从0开始(第一个字符)截取
+//
+// 返回截取后的字符串
+func Substr(str string, length int, offsets ...int) string {
+	offset := 0
+	if len(offsets) > 0 {
+		offset = offsets[0]
+	}
 	rstr := []rune(str)
 	if length > len(rstr) {
 		length = len(rstr)
 	}
-	return string(rstr[:length])
+	return string(rstr[offset : length+offset])
 }
 
 // 去除字符串中的空白字符包含 回车 换行 制表符等, 注意是字符串中的所有的空白符全部去除
@@ -67,7 +75,7 @@ func Index(slice []string, item string) int {
 
 // 反转字符串 支持所有字符串的反转 中英文符号等都支持
 //
-// 	str 要进行反转的字符串
+//	str 要进行反转的字符串
 //
 // 返回反转后的字符串
 // @author: TekinTian <tekintian@gmail.com>

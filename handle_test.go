@@ -12,7 +12,7 @@ import (
 
 func TestSubstr(t *testing.T) {
 	txt := "你好go语言!"
-	if ret := strutils.Substr(txt, 4); ret == "你好go" {
+	if ret := strutils.Substr(txt, 4, 2); ret == "go语言" {
 		t.Log("ok")
 	} else {
 		t.Fatalf("test failed, expected: 你好go got: %v", ret)
