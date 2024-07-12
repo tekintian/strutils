@@ -6,35 +6,34 @@ import "strings"
 
 // 截取指定长度的字符串 支持中文截取
 //
-//		start 开始截取的字符位置,从1开始 包含1
+//		start 开始截取的字符索引位置,从0开始
 //		lengths 要截取的字符长度 可选参数, 默认从开始位置一直截取到字符串的末尾
 //
-//	 如: Substr("你好go语言!",3,4) 返回 "go语言"
-//			Substr("Hello world",7,5) 返回 "world"
+//	 如: Substr("你好go语言!",2,4) 返回 "go语言"
+//			Substr("Hello world",6,5) 返回 "world"
 //
 // 返回截取后的字符串
 func Substr(str string, start int, lengths ...int) string {
 	rstr := []rune(str) // 将字符串转换为rune切片,这样才能支持中文等双字节字符串的截取
-	start--             // 切片里面的上下标都是索引 所以这里需要 -1
 	length := len(rstr) - start
-	endIdx := start + length
+	end := start + length
 	if len(lengths) > 0 {
 		// 防止end越界
 		if lengths[0] < 0 {
-			endIdx = 0
-		} else if lengths[0] <= endIdx - start {
-			endIdx = lengths[0] + start
+			end = 0
+		} else if lengths[0] <= end - start {
+			end = lengths[0] + start
 		}
 	}
 	// 防止start越界
 	switch {
 	case start < 0:
 		start = 0
-	case start > endIdx:
-		start = endIdx
+	case start > end:
+		start = end
 	}
 	// 注意这里切片[start:end]里面的start:end规则是 开始索引和结束索引
-	return string(rstr[start:endIdx])
+	return string(rstr[start:end])
 }
 
 // 去除字符串中的空白字符包含 回车 换行 制表符等, 注意是字符串中的所有的空白符全部去除

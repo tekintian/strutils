@@ -17,11 +17,11 @@ func TestSubstr(t *testing.T) {
 		lengths int
 		out     string
 	}{
-		{str: "530102001", start: 3, lengths: 1, out: "0"},
-		{str: "530102001", start: 3, lengths: 3, out: "010"},
-		{str: "你好go语言!", start: 3, lengths: 2, out: "go"},
-		{str: "你好go语言!", start: 3, lengths: 12, out: "go语言!"},
-		{str: "hello world!", start: 7, lengths: 5, out: "world"},
+		{str: "530102001", start: 2, lengths: 1, out: "0"},
+		{str: "530102001", start: 2, lengths: 3, out: "010"},
+		{str: "你好go语言!", start: 2, lengths: 2, out: "go"},
+		{str: "你好go语言!", start: 4, lengths: 12, out: "语言!"},
+		{str: "hello world!", start: 6, lengths: 5, out: "world"},
 	}
 	for _, v := range cases {
 		if ret := strutils.Substr(v.str, v.start, v.lengths); ret != v.out {
