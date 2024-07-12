@@ -64,3 +64,23 @@ func Index(slice []string, item string) int {
 	}
 	return -1
 }
+
+// 反转字符串 支持所有字符串的反转 中英文符号等都支持
+//
+// 	str 要进行反转的字符串
+//
+// 返回反转后的字符串
+// @author: TekinTian <tekintian@gmail.com>
+func ReverseStr(str string) string {
+	ss := func(s string) *[]rune {
+		var b []rune
+		for _, k := range s {
+			// 这里利用栈的特性 先进后出 来反转字符串 注意这个defer里面的东西只有当函数体执行完毕后才会被执行
+			defer func(v rune) {
+				b = append(b, v)
+			}(k)
+		}
+		return &b
+	}(str)
+	return string(*ss)
+}

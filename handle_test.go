@@ -108,3 +108,20 @@ func TestIndex(t *testing.T) {
 		t.Fatalf("Expected -1, got %v", ret)
 	}
 }
+
+func TestReverseStr(t *testing.T) {
+	testCases := []struct {
+		In  string
+		Out string
+	}{
+		{In: "你好Hello", Out: "olleH好你"},
+		{In: "Hello world", Out: "dlrow olleH"},
+	}
+	for _, v := range testCases {
+		rstr := strutils.ReverseStr(v.In)
+		if rstr != v.Out {
+			t.Fatalf("ReverseStr %v Failed!  expected: %v, got: %v", v.In, v.Out, rstr)
+		}
+	}
+
+}
