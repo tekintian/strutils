@@ -67,3 +67,27 @@ func TestStr2Float64(t *testing.T) {
 		})
 	}
 }
+
+func TestGbkToUtf8(t *testing.T) {
+	utf8Data, err := strutils.GbkToUtf8(Gb2312Data)
+	if err != nil {
+		t.Error(err)
+	}
+	t.Logf("utf8 data: %v", string(utf8Data))
+}
+
+func TestUtf8ToGbk(t *testing.T) {
+	utf8Data, err := strutils.GbkToUtf8(Gb2312Data)
+	if err != nil {
+		t.Error(err)
+	}
+	gbkData, err := strutils.Utf8ToGbk(utf8Data)
+	if err != nil {
+		t.Error(err)
+	}
+	if fmt.Sprintf("%v", gbkData) != fmt.Sprintf("%v", Gb2312Data) {
+		t.Fatal("Utf8ToGbk编码转换失败, got false, want true")
+	} else {
+		t.Log("ok")
+	}
+}

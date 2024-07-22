@@ -108,17 +108,18 @@ func IsGbkData(data []byte) bool {
 	length := len(data)
 	var i int = 0
 	for i < length {
-		if data[i] <= 0x7f {
-			//编码0~127,只有一个字节的编码，兼容ASCII码
+		// // ASCII 编码的范围:  十进制 => 0 - 127 。  十六进制： 0x00  -  0x7F 。
+		if data[i] <= 127 {
 			i++
 			continue
 		} else {
-			//大于127的使用双字节编码，落在gbk编码范围内的字符
-			if data[i] >= 0x81 &&
-				data[i] <= 0xfe &&
-				data[i+1] >= 0x40 &&
-				data[i+1] <= 0xfe &&
-				data[i+1] != 0xf7 {
+			// GB2312编码的范围: 十进制 => 高位字节：161 - 247, 十六进制：0xA1 - 0xF7
+			// 低位字节：161 - 254 , 十六进制：0xA1 - 0xFE
+			if data[i] >=129 &&
+				data[i] <= 254 &&
+				data[i+1] >= 64 &&
+				data[i+1] <= 254 &&
+				data[i+1] <= 247 {
 				i += 2
 				continue
 			} else {
