@@ -102,3 +102,37 @@ func JudgeBase64(str string) bool {
 	//如果解码后再转码和原来的字符一样说明是base64 否则不是
 	return str == bs64Str
 }
+
+// 判断数据是否是gbk编码
+func IsGbkData(data []byte) bool {
+	length := len(data)
+	var i int = 0
+	for i < length {
+		if data[i] <= 0x7f {
+			//编码0~127,只有一个字节的编码，兼容ASCII码
+			i++
+			continue
+		} else {
+			//大于127的使用双字节编码，落在gbk编码范围内的字符
+			if data[i] >= 0x81 &&
+				data[i] <= 0xfe &&
+				data[i+1] >= 0x40 &&
+				data[i+1] <= 0xfe &&
+				data[i+1] != 0xf7 {
+				i += 2
+				continue
+			} else {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// 判断字符串是否是gbk编码
+func IsGbkStr(str string) bool {
+	if str == "" {
+		return false
+	}
+	return IsGbkData([]byte(str))
+}

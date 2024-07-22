@@ -7,8 +7,13 @@ package strutils
 // @author tekintian <tekintian@gmail.com>
 
 import (
+	"bytes"
+	"io"
 	"strconv"
 	"strings"
+
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 )
 
 // 从字符串中匹配数字 返回数字对应的字符串
@@ -110,4 +115,36 @@ func Str2Float64(str string) float64 {
 		num = 0
 	}
 	return num
+}
+
+// gbk to utf8 encoding conversion
+func GbkToUtf8(s []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
+	d, e := io.ReadAll(reader)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
+}
+
+// utf8 to gbk encoding conversion
+func Utf8ToGbk(s []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewEncoder())
+	d, e := io.ReadAll(reader)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
+}
+
+// 字符串编码 gbk到utf8转换
+func StrGbkToUtf8(str string) (string, error) {
+	data, err := GbkToUtf8([]byte(str))
+	return string(data), err
+}
+
+// 字符串编码 utf8到gbk转换
+func StrUtf8ToGbk(str string) (string, error) {
+	data, err := Utf8ToGbk([]byte(str))
+	return string(data), err
 }
