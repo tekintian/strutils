@@ -2,7 +2,9 @@ package strutils_test
 
 import (
 	"fmt"
+	"strings"
 	"testing"
+	"time"
 
 	strutils "github.com/tekintian/go-str-utils"
 )
@@ -89,5 +91,45 @@ func TestUtf8ToGbk(t *testing.T) {
 		t.Fatal("Utf8ToGbk编码转换失败, got false, want true")
 	} else {
 		t.Log("ok")
+	}
+}
+
+func TestAnyToStr(t *testing.T) {
+	now := time.Now()
+	testCases := []struct {
+		input  interface{}
+		output string
+	}{
+		{input: now, output: now.Format(time.RFC3339)},
+		{input: [2]int{123, 456}, output: "123 456"},
+		{input: []int{123, 456}, output: "123 456"},
+		{input: map[string]interface{}{"aaa": 123, "bbb": 456}, output: "aaa:123 bbb:456"},
+		{input: 123, output: "123"},
+		{input: 12.3, output: "12.3"},
+	}
+	for _, v := range testCases {
+		str := strutils.AnyToStr(v.input)
+		if !strings.HasPrefix(str, v.output) {
+			t.Errorf("Testing failure , expected %v, got %v", v.output, str)
+		}
+	}
+
+}
+
+func TestStrToInt64(t *testing.T)  {
+	testCases := []struct {
+		input  string
+		output float64
+	}{
+		// {input: "123", output: 123},
+		// {input:"1,2,3", output: 123},
+		// {input:"abc123", output:123},
+		{input: "12.888", output: 12.888},
+	}
+	for _, v := range testCases {
+		ival:= strutils.StrToFloat64(v.input)
+		if ival != v.output {
+			t.Fatalf("Expected output to be %v, got %v", v.output, ival)
+		}
 	}
 }

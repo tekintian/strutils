@@ -8,9 +8,12 @@ package strutils
 
 import (
 	"bytes"
+	"fmt"
 	"io"
+	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
@@ -147,4 +150,112 @@ func StrGbkToUtf8(str string) (string, error) {
 func StrUtf8ToGbk(str string) (string, error) {
 	data, err := Utf8ToGbk([]byte(str))
 	return string(data), err
+}
+
+// AnyToStr 返回any类型的数据的字符串
+// nil数据返回空字符串,
+// 数组,切片 返回以空格分隔的值, map类型的数据返回以空格分隔的 k:v ,
+// 如果value是Time对象,则默认使用 time.RFC3339 格式化时间返回
+// 实现了Stringer接口的结构体调用 String返回字符串, 字符串类型的直接返回字符串
+// 其他类型全部使用 fmt.Sprintf("%v",value) 返回字符串
+func AnyToStr(value interface{}) string {
+	if value == nil {
+		return ""
+	}
+	retStr := ""
+	// Indirect方法兼容指针或者值
+	vrt := reflect.Indirect(reflect.ValueOf(value))
+	switch vrt.Kind() {
+	case reflect.Struct:
+		// 如果value是一个时间对象  这里因为time.Time基本上都是直接使用对象而非指针,所以这里只考虑非指针Time
+		if tt, ok := value.(time.Time); ok {
+			if tt.IsZero() { // 时间对象里面的零值
+				return ""
+			}
+			return tt.Format(time.RFC3339) // 默认使用 time.RFC3339 格式化时间后返回
+		} else if f, ok := value.(fmt.Stringer); ok {
+			// 如果value实现了Stringer接口,则调用接口中的String()方法返回数据
+			return f.String()
+		}
+
+	case reflect.Map:
+		vmap := value.(map[string]interface{})
+		sb := strings.Builder{}
+		for k, v := range vmap {
+			sb.WriteString(fmt.Sprintf("%s:%v ", k, v))
+		}
+		str := sb.String()
+		retStr = str[:len(str)-1] // 删除最后一个空格
+	case reflect.String:
+		return value.(string)
+	case reflect.Slice, reflect.Array:
+		retStr = fmt.Sprintf("%v", vrt.Interface())
+		retStr = strings.Trim(retStr, "[]") // 删除数组和切片数据中的[]
+	// 其他类型全部使用 %v 来转换了
+	default:
+		if vrt.IsValid() {
+			// 使用%v 格式化为字符串返回
+			retStr = fmt.Sprintf("%v", vrt.Interface())
+		}
+	}
+	if retStr == "" {
+		retStr = fmt.Sprintf("%v", value)
+	}
+	return retStr
+}
+
+// 使用正则从字符串中解析数字, 支持小数和使用了,分隔的数字的匹配
+// 如  123,456 获取的结果为 123456;  abc12.88def   返回 12.88
+func ParseNumberStr(str string) string {
+	regex, _ := GetRegexp(`([\d\.,]+)`)
+	dstr := regex.FindString(str)
+	if strings.Contains(dstr, ",") {
+		dstr = strings.ReplaceAll(dstr, ",", "") // 删除数字中的分隔符 ,
+	}
+	return dstr
+}
+
+// 使用正则匹配字符串中的数字并转换为 float64
+// 支持使用了,分隔的数字的匹配, 如 123,456.99  获取的结果为 123456.99
+func strToFloat64(str string) (float64, error) {
+	dstr := ParseNumberStr(str)
+	// 注意这里因为 ParseInt 无法解析小数(会返回0), 所以转换为其他类型也是使用ParseFloat解析为float64后再强转为int序列的类型
+	f64Val, err := strconv.ParseFloat(dstr, 64)
+	if err != nil {
+		return 0, err
+	}
+	return f64Val, nil
+}
+
+// 字符串到 float64 转换
+func StrToFloat64(str string) float64 {
+	fval, err := strToFloat64(str)
+	if err != nil {
+		return 0
+	}
+	return fval
+}
+
+// 字符串到 int 转换
+func StrToInt(str string) int {
+	fval := StrToFloat64(str)
+	return int(fval)
+}
+
+// 字符串到 int64 转换
+func StrToInt64(str string) int64 {
+	fval := StrToFloat64(str)
+	return int64(fval)
+}
+
+// 字符串到 uint 转换
+func StrToUint(str string) uint {
+	fval := StrToFloat64(str)
+	return uint(fval)
+}
+
+// 字符串到 uint64 转换
+func StrToUint64(str string) uint64 {
+	fval := StrToFloat64(str)
+	return uint64(fval)
 }
