@@ -287,8 +287,10 @@ func JsonStrToStruct(m string, dst interface{}) error {
 }
 
 // TimeToStr 转换 时间字符串/时间戳/时间对象 到字符串
-// tval 要转换的时间对象,  时间戳, 时间字符串(注意,如果时间格式非默认的格式,需要指定时间格式)
-// layouts 可选的时间格式 默认输出字符串格式 "2006-01-02T15:04:05Z07:00", 默认tval字符串对应的时间格式 "2006-01-02 15:04:05"
+// tval 要转换的时间对象,  时间戳(支持秒和毫秒), 时间字符串(注意,如果时间格式非默认的格式,需要指定时间格式)
+// layouts 可选的时间格式
+// 		默认输出字符串格式 "2006-01-02T15:04:05Z07:00",
+// 		默认tval字符串对应的时间格式 "2006-01-02 15:04:05"
 //
 //	layouts可以传递多个时间格式参数,
 //		第一个为最终返回的字符串格式,默认"2006-01-02T15:04:05Z07:00"
@@ -296,6 +298,8 @@ func JsonStrToStruct(m string, dst interface{}) error {
 //			还会自动尝试格式 time.RFC3339, 2006年01月02日15:04:05
 //
 // 时间字符串
+// @author tekintian <tekintian@gmail.com>
+// @see https://dev.tekin.cn
 func TimeToStr(tval interface{}, layouts ...string) string {
 	// 默认时间格式,
 	toLayout := time.RFC3339   // 默认转换后的字符串对应的时间格式 "2006-01-02T15:04:05Z07:00"
@@ -318,16 +322,17 @@ func TimeToStr(tval interface{}, layouts ...string) string {
 	case time.Time: // 时间对象
 		return v.Format(toLayout)
 	case int: // 时间戳解析
-		t := time.Unix(int64(v), 0)
-		return t.Format(toLayout)
+		return TsToStr(int64(v), toLayout)
 	case uint:
-		t := time.Unix(int64(v), 0)
-		return t.Format(toLayout)
+		return TsToStr(int64(v), toLayout)
 	case int64:
-		// 如果是时间戳类型，将其转换为时间对象
-		t := time.Unix(v, 0)
-		// 格式化时间字符串
-		return t.Format(toLayout)
+		return TsToStr(v, toLayout)
+	case uint64:
+		return TsToStr(int64(v), toLayout)
+	case int32:
+		return TsToStr(int64(v), toLayout)
+	case uint32:
+		return TsToStr(int64(v), toLayout)
 	case string: // 字符串解析
 		// 如果是字符串类型，将其解析为时间对象
 		if t, err := time.Parse(srcLayout, v); err == nil {
@@ -345,4 +350,22 @@ func TimeToStr(tval interface{}, layouts ...string) string {
 	default:
 		return ""
 	}
+}
+
+// 格式化时间戳到字符串
+// ts 时间戳 支持秒 10位, 毫秒 13位
+// layout 时间格式 如果为空,则默认使用 time.RFC3339 作为格式 "2006-01-02T15:04:05Z07:00"
+// 格式后的时间字符串
+func TsToStr(ts int64, layout string) string {
+	var t time.Time
+	if ts < 9999999999 { // 当前的时间戳是秒 秒的时间戳最长10位, 毫秒的时间戳长度为13位
+		t = time.Unix(ts, 0)
+	} else {
+		t = time.UnixMilli(ts)
+	}
+	// 格式化时间字符串
+	if layout == "" {
+		layout = time.RFC3339
+	}
+	return t.Format(layout)
 }

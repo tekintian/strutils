@@ -146,6 +146,7 @@ func TestTimeToStr(t *testing.T) {
 		{input: "2024年08月03日12:04:49", output: "2024-08-03T12:04:49Z"},
 		{input: ts, output: "2024-08-03T12:21:15Z"},
 		{input: 1722657237, output: "2024-08-03T11:53:57+08:00"},
+		{input: 1722683285997, output: "2024-08-03T19:08:05+08:00"}, // 毫秒时间戳
 	}
 	for _, v := range testCases {
 		ival := strutils.TimeToStr(v.input)
@@ -154,12 +155,12 @@ func TestTimeToStr(t *testing.T) {
 		}
 	}
 	// 时间戳, 指定输出字符串格式
-	ival := strutils.TimeToStr(1722657237, "", time.DateTime)
+	ival := strutils.TimeToStr(1722657237, time.DateTime)
 	if ival != "2024-08-03 11:53:57" {
 		t.Fatalf("Expected output to be 2024-08-03 11:53:57, got %v", ival)
 	}
 	// 指定输入tval字符串的格式,和最终输出字符串格式
-	ival2 := strutils.TimeToStr("2024-08-03T12:21:15Z", time.RFC3339, time.DateTime)
+	ival2 := strutils.TimeToStr("2024-08-03T12:21:15Z", time.DateTime, time.RFC3339)
 	if ival2 != "2024-08-03 12:21:15" {
 		t.Fatalf("Expected output to be 2024-08-03 12:21:15, got %v", ival2)
 	}
