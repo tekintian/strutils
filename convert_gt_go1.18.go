@@ -7,6 +7,7 @@
 // @see https://dev.tekin.cn
 package strutils
 
+
 // 用于泛型约束的接口
 type iNumber interface {
 	int | int8 | int16 | int32 | int64 | float32 | float64 | uint | uint8 | uint16 | uint32 | uint64
@@ -22,3 +23,4 @@ func StrToNumber[T iNumber](str string, defVal T) T {
 	// 强转为指定的T类型
 	return T(fval)
 }
+

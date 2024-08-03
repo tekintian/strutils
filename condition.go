@@ -4,10 +4,13 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log"
+	"net/url"
+	"strings"
 )
 
 // 字符串条件判断相关函数
 
+// 判断字符串是否是中文字符串
 func StrIsChinese(str string) bool {
 	reg, err := GetRegexp("^([\u4e00-\u9fa5]+)$")
 	if err != nil {
@@ -17,6 +20,7 @@ func StrIsChinese(str string) bool {
 	return reg.MatchString(str)
 }
 
+// 判断字符串是否包含中文字符
 func StrContainsChinese(str string) bool {
 	reg, err := GetRegexp("([\u4e00-\u9fa5]+)")
 	if err != nil {
@@ -24,6 +28,12 @@ func StrContainsChinese(str string) bool {
 		return false
 	}
 	return reg.MatchString(str)
+}
+
+// 判断字符串str是否为数字 整数或者浮点数都算是数字
+func StrIsNumber(str string) bool {
+	re, _ := GetRegexp(`^(\d+|.\d+|\d+.\d+)$`)
+	return re.MatchString(str)
 }
 
 // 判断字符串是否包含连续的数字, minCs 最小连续数字的长度,默认 2
@@ -103,6 +113,11 @@ func JudgeBase64(str string) bool {
 	return str == bs64Str
 }
 
+// JudgeBase64 别名
+func IsBase64Str(str string) bool {
+	return JudgeBase64(str)
+}
+
 // 判断数据是否是gbk编码
 func IsGbkData(data []byte) bool {
 	length := len(data)
@@ -115,7 +130,7 @@ func IsGbkData(data []byte) bool {
 		} else {
 			// GB2312编码的范围: 十进制 => 高位字节：161 - 247, 十六进制：0xA1 - 0xF7
 			// 低位字节：161 - 254 , 十六进制：0xA1 - 0xFE
-			if data[i] >=129 &&
+			if data[i] >= 129 &&
 				data[i] <= 254 &&
 				data[i+1] >= 64 &&
 				data[i+1] <= 254 &&
@@ -136,4 +151,12 @@ func IsGbkStr(str string) bool {
 		return false
 	}
 	return IsGbkData([]byte(str))
+}
+
+// 验证是否有效的URL
+func IsValidUrl(urlStr string) bool {
+	ssurl, _ := url.PathUnescape(urlStr)
+	ssurl = strings.TrimSpace(ssurl)
+	regex, _ := GetRegexp(`^(https?:\/\/)?([\w\./&^#_!-=+$@~*?]+)`)
+	return regex.MatchString(ssurl)
 }

@@ -8,6 +8,7 @@ package strutils
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"reflect"
@@ -274,4 +275,74 @@ func StrToUint(str string) uint {
 func StrToUint64(str string) uint64 {
 	fval := StrToFloat64(str)
 	return uint64(fval)
+}
+
+// JsonStrToStruct 反序列化字符串并赋值给对应结构体
+func JsonStrToStruct(m string, dst interface{}) error {
+	err := json.Unmarshal([]byte(m), dst)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// TimeToStr 转换 时间字符串/时间戳/时间对象 到字符串
+// tval 要转换的时间对象,  时间戳, 时间字符串(注意,如果时间格式非默认的格式,需要指定时间格式)
+// layouts 可选的时间格式 默认输出字符串格式 "2006-01-02T15:04:05Z07:00", 默认tval字符串对应的时间格式 "2006-01-02 15:04:05"
+//
+//	layouts可以传递多个时间格式参数,
+//		第一个为最终返回的字符串格式,默认"2006-01-02T15:04:05Z07:00"
+//		第二个为源格式(tval字符串对应的时间格式),默认"2006-01-02 15:04:05",仅tval为字符串时有效,
+//			还会自动尝试格式 time.RFC3339, 2006年01月02日15:04:05
+//
+// 时间字符串
+func TimeToStr(tval interface{}, layouts ...string) string {
+	// 默认时间格式,
+	toLayout := time.RFC3339   // 默认转换后的字符串对应的时间格式 "2006-01-02T15:04:05Z07:00"
+	srcLayout := time.DateTime // 默认tval对应的时间格式 "2006-01-02 15:04:05"
+	switch len(layouts) {
+	case 1:
+		if layouts[0] != "" {
+			toLayout = layouts[0]
+		}
+	case 2:
+		if layouts[0] != "" {
+			toLayout = layouts[0]
+		}
+		if layouts[1] != "" {
+			srcLayout = layouts[1]
+		}
+	}
+	// 根据不同类型选择对应的解析方式
+	switch v := tval.(type) {
+	case time.Time: // 时间对象
+		return v.Format(toLayout)
+	case int: // 时间戳解析
+		t := time.Unix(int64(v), 0)
+		return t.Format(toLayout)
+	case uint:
+		t := time.Unix(int64(v), 0)
+		return t.Format(toLayout)
+	case int64:
+		// 如果是时间戳类型，将其转换为时间对象
+		t := time.Unix(v, 0)
+		// 格式化时间字符串
+		return t.Format(toLayout)
+	case string: // 字符串解析
+		// 如果是字符串类型，将其解析为时间对象
+		if t, err := time.Parse(srcLayout, v); err == nil {
+			return t.Format(toLayout)
+		}
+		// 指定的时间格式解析失败,使用常用格式再次尝试
+		if t, err := time.Parse(time.RFC3339, v); err == nil {
+			return t.Format(toLayout)
+		}
+		// 使用这个 2006年01月02日15:04:05 格式尝试解析
+		if t, err := time.Parse("2006年01月02日15:04:05", v); err == nil {
+			return t.Format(toLayout)
+		}
+		return "" // 解析失败,返回空字符串
+	default:
+		return ""
+	}
 }

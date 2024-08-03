@@ -123,9 +123,9 @@ func TestStrToInt64(t *testing.T) {
 		input  string
 		output float64
 	}{
-		// {input: "123", output: 123},
-		// {input:"1,2,3", output: 123},
-		// {input:"abc123", output:123},
+		{input: "123", output: 123},
+		{input: "1,2,3", output: 123},
+		{input: "abc123", output: 123},
 		{input: "12.888", output: 12.888},
 	}
 	for _, v := range testCases {
@@ -133,5 +133,34 @@ func TestStrToInt64(t *testing.T) {
 		if ival != v.output {
 			t.Fatalf("Expected output to be %v, got %v", v.output, ival)
 		}
+	}
+}
+
+func TestTimeToStr(t *testing.T) {
+	ts, _ := time.Parse(time.DateTime, "2024-08-03 12:21:15") // ts对象
+	// 测试用例
+	testCases := []struct {
+		input  interface{}
+		output string
+	}{
+		{input: "2024年08月03日12:04:49", output: "2024-08-03T12:04:49Z"},
+		{input: ts, output: "2024-08-03T12:21:15Z"},
+		{input: 1722657237, output: "2024-08-03T11:53:57+08:00"},
+	}
+	for _, v := range testCases {
+		ival := strutils.TimeToStr(v.input)
+		if ival != v.output {
+			t.Fatalf("Expected output to be %v, got %v", v.output, ival)
+		}
+	}
+	// 时间戳, 指定输出字符串格式
+	ival := strutils.TimeToStr(1722657237, "", time.DateTime)
+	if ival != "2024-08-03 11:53:57" {
+		t.Fatalf("Expected output to be 2024-08-03 11:53:57, got %v", ival)
+	}
+	// 指定输入tval字符串的格式,和最终输出字符串格式
+	ival2 := strutils.TimeToStr("2024-08-03T12:21:15Z", time.RFC3339, time.DateTime)
+	if ival2 != "2024-08-03 12:21:15" {
+		t.Fatalf("Expected output to be 2024-08-03 12:21:15, got %v", ival2)
 	}
 }
