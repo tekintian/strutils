@@ -8,7 +8,7 @@ package strutils_test
 import (
 	"testing"
 
-	strutils "github.com/tekintian/gostrutils"
+	strutils "github.com/tekintian/strutils"
 )
 
 func TestStrToNumber(t *testing.T) {

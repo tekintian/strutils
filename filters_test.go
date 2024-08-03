@@ -3,7 +3,7 @@ package strutils_test
 import (
 	"testing"
 
-	strutils "github.com/tekintian/gostrutils"
+	strutils "github.com/tekintian/strutils"
 )
 
 func TestHtml2str(t *testing.T) {

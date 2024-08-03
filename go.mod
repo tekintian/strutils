@@ -1,4 +1,4 @@
-module github.com/tekintian/gostrutils
+module github.com/tekintian/strutils
 
 go 1.16
 

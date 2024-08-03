@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	strutils "github.com/tekintian/gostrutils"
+	strutils "github.com/tekintian/strutils"
 )
 
 func TestStr2Int(t *testing.T) {

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	strutils "github.com/tekintian/gostrutils"
+	strutils "github.com/tekintian/strutils"
 )
 
 func TestSubstr(t *testing.T) {

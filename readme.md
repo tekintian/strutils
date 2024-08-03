@@ -38,9 +38,7 @@
 - StrContainsChinese 是否包含中文
 - StrContainsContinuousNum 是否包含连续的数字 可自定义连续数字的长度,默认 2
 
-
-更多的函数使用方法请参考PKG文档: https://pkg.go.dev/github.com/tekintian/gostrutils#pkg-index
-
+更多的函数使用方法请参考 PKG 文档: https://pkg.go.dev/github.com/tekintian/strutils#pkg-index
 
 ## 使用方法
 
@@ -49,7 +47,7 @@ go 版本环境, 最低 1.16, 我们建议你使用官方最新正式版, 这样
 - 安装最新版本依赖
 
 ```sh
-go get -u github.com/tekintian/gostrutils
+go get -u github.com/tekintian/strutils
 ```
 
 - 使用示例
@@ -57,7 +55,7 @@ go get -u github.com/tekintian/gostrutils
 ```go
 import (
 	"fmt"
-	strutils "github.com/tekintian/gostrutils"
+	"github.com/tekintian/strutils"
 )
 
 func main() {
@@ -69,11 +67,13 @@ func main() {
 
 其他使用示例可参考 \*\_test.go 中的测试用例， 我们的每个函数都有测试用例， 部分函数还使用了 Fuzz 模糊测试技术 来确保我们函数的可靠和高效！ 同时也能帮助我们发现一些潜在的风险等......
 
-也可参考 go pkg 文档,地址: https://pkg.go.dev/github.com/tekintian/gostrutils
+也可参考 go pkg 文档,地址: https://pkg.go.dev/github.com/tekintian/strutils
 
 ## go 编码规范
 
-每个函数需要有对应的测试函数,以确保函数的可靠性, 编码规范请参考 go 官方的 [Effective Go](https://go.dev/doc/effective_go.html)
+每个函数需要有对应的测试函数,以确保函数的可靠性, 编码规范请参考 go 官方的
+[Effective Go](https://go.dev/doc/effective_go.html) <br>
+[Effective Go 国内加速地址](https://golang.google.cn/doc/effective_go)
 
 ## go 参考文档
 
@@ -83,4 +83,5 @@ Go 程序设计语言规范 https://go.dev/ref/spec
 
 Fuzzing 模糊测试官方使用文档 https://go.dev/security/fuzz
 
+golang官方文档 国内加速版本: https://golang.google.cn/doc/
 

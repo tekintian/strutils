@@ -77,7 +77,7 @@ func BenchmarkNormalRegexp(b *testing.B) {
 > go test -bench=. -benchtime=10s -count=10
 goos: darwin
 goarch: amd64
-pkg: github.com/tekintian/gostrutils
+pkg: github.com/tekintian/strutils
 cpu: Intel(R) Core(TM) i7-4770HQ CPU @ 2.20GHz
 BenchmarkCacheRegexp-8           3936446              2876 ns/op
 BenchmarkCacheRegexp-8           4215283              3142 ns/op
@@ -100,6 +100,6 @@ BenchmarkNormalRegexp-8           633378             18138 ns/op
 BenchmarkNormalRegexp-8           669038             18004 ns/op
 BenchmarkNormalRegexp-8           681964             17552 ns/op
 PASS
-ok      github.com/tekintian/gostrutils       272.780s
+ok      github.com/tekintian/strutils       272.780s
 
 */

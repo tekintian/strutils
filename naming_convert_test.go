@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	strutils "github.com/tekintian/gostrutils"
+	strutils "github.com/tekintian/strutils"
 )
 
 func TestStrFn(t *testing.T) {
