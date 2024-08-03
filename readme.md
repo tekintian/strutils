@@ -39,7 +39,7 @@
 - StrContainsContinuousNum 是否包含连续的数字 可自定义连续数字的长度,默认 2
 
 
-更多的函数使用方法请参考PKG文档: https://pkg.go.dev/github.com/tekintian/go-str-utils#pkg-index
+更多的函数使用方法请参考PKG文档: https://pkg.go.dev/github.com/tekintian/gostrutils#pkg-index
 
 
 ## 使用方法
@@ -49,7 +49,7 @@ go 版本环境, 最低 1.16, 我们建议你使用官方最新正式版, 这样
 - 安装最新版本依赖
 
 ```sh
-go get -u github.com/tekintian/go-str-utils
+go get -u github.com/tekintian/gostrutils
 ```
 
 - 使用示例
@@ -57,7 +57,7 @@ go get -u github.com/tekintian/go-str-utils
 ```go
 import (
 	"fmt"
-	strutils "github.com/tekintian/go-str-utils"
+	strutils "github.com/tekintian/gostrutils"
 )
 
 func main() {
@@ -69,7 +69,7 @@ func main() {
 
 其他使用示例可参考 \*\_test.go 中的测试用例， 我们的每个函数都有测试用例， 部分函数还使用了 Fuzz 模糊测试技术 来确保我们函数的可靠和高效！ 同时也能帮助我们发现一些潜在的风险等......
 
-也可参考 go pkg 文档,地址: https://pkg.go.dev/github.com/tekintian/go-str-utils
+也可参考 go pkg 文档,地址: https://pkg.go.dev/github.com/tekintian/gostrutils
 
 ## go 编码规范
 
@@ -82,3 +82,5 @@ Go 语言内置包 strings 文档 https://pkg.go.dev/strings
 Go 程序设计语言规范 https://go.dev/ref/spec
 
 Fuzzing 模糊测试官方使用文档 https://go.dev/security/fuzz
+
+

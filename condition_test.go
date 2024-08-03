@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	strutils "github.com/tekintian/go-str-utils"
+	strutils "github.com/tekintian/gostrutils"
 )
 
 func TestStrIsChinese(t *testing.T) {
@@ -157,7 +157,7 @@ func FuzzJudgeBase64(f *testing.F) {
 	fuzz: elapsed: 30s, execs: 1348064 (16565/sec), new interesting: 2 (total: 199)
 	fuzz: elapsed: 31s, execs: 1348064 (0/sec), new interesting: 2 (total: 199)
 	PASS
-	ok      github.com/tekintian/go-str-utils       32.364s
+	ok      github.com/tekintian/gostrutils       32.364s
 	*/
 }
 

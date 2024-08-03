@@ -8,7 +8,7 @@ package strutils_test
 import (
 	"testing"
 
-	strutils "github.com/tekintian/go-str-utils"
+	strutils "github.com/tekintian/gostrutils"
 )
 
 func TestStrToNumber(t *testing.T) {

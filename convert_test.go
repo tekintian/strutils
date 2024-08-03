@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	strutils "github.com/tekintian/go-str-utils"
+	strutils "github.com/tekintian/gostrutils"
 )
 
 func TestStr2Int(t *testing.T) {
@@ -100,12 +100,14 @@ func TestAnyToStr(t *testing.T) {
 		input  interface{}
 		output string
 	}{
+		{input: []byte("你好中国Hello world"), output: "你好中国Hello world"},
 		{input: now, output: now.Format(time.RFC3339)},
 		{input: [2]int{123, 456}, output: "123 456"},
 		{input: []int{123, 456}, output: "123 456"},
 		{input: map[string]interface{}{"aaa": 123, "bbb": 456}, output: "aaa:123 bbb:456"},
 		{input: 123, output: "123"},
-		{input: 12.3, output: "12.3"},
+		{input: 88.9, output: "88.9"},
+		{input: true, output: "true"},
 	}
 	for _, v := range testCases {
 		str := strutils.AnyToStr(v.input)
@@ -116,7 +118,7 @@ func TestAnyToStr(t *testing.T) {
 
 }
 
-func TestStrToInt64(t *testing.T)  {
+func TestStrToInt64(t *testing.T) {
 	testCases := []struct {
 		input  string
 		output float64
@@ -127,7 +129,7 @@ func TestStrToInt64(t *testing.T)  {
 		{input: "12.888", output: 12.888},
 	}
 	for _, v := range testCases {
-		ival:= strutils.StrToFloat64(v.input)
+		ival := strutils.StrToFloat64(v.input)
 		if ival != v.output {
 			t.Fatalf("Expected output to be %v, got %v", v.output, ival)
 		}

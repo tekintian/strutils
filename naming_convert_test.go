@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	strutils "github.com/tekintian/go-str-utils"
+	strutils "github.com/tekintian/gostrutils"
 )
 
 func TestStrFn(t *testing.T) {

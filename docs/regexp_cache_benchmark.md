@@ -1,4 +1,4 @@
-#regexp 正则编译缓存
+# regexp 正则编译缓存
 
 为什么要用编译缓存？ 为了在高并发和同一个正则被多次使用时获得更好的执行效率！ 这个就是算法中一个典型的利用内存空间换时间的最佳实践
 
@@ -13,7 +13,7 @@
 > go test -run=^$ -count=3 -bench=.
 goos: darwin
 goarch: amd64
-pkg: github.com/tekintian/go-str-utils
+pkg: github.com/tekintian/gostrutils
 cpu: Intel(R) Core(TM) i7-4770HQ CPU @ 2.20GHz
 BenchmarkCacheRegexp-8            373348              2902 ns/op
 BenchmarkCacheRegexp-8            388639              2878 ns/op
@@ -22,7 +22,7 @@ BenchmarkNormalRegexp-8            63574             18020 ns/op
 BenchmarkNormalRegexp-8            63924             18126 ns/op
 BenchmarkNormalRegexp-8            64536             18196 ns/op
 PASS
-ok      github.com/tekintian/go-str-utils       14.675s
+ok      github.com/tekintian/gostrutils       14.675s
 ```
 
 - 使用读锁的情况
@@ -32,7 +32,7 @@ ok      github.com/tekintian/go-str-utils       14.675s
 ➜  go-strutils git:(main) ✗ go test -bench=. -benchtime=10s -count=3
 goos: darwin
 goarch: amd64
-pkg: github.com/tekintian/go-str-utils
+pkg: github.com/tekintian/gostrutils
 cpu: Intel(R) Core(TM) i7-4770HQ CPU @ 2.20GHz
 BenchmarkRegexp-8                     27         448754064 ns/op
 BenchmarkRegexp-8                     26         494853641 ns/op
@@ -44,7 +44,7 @@ BenchmarkNormalRegexp-8           700718             15940 ns/op
 BenchmarkNormalRegexp-8           759853             15823 ns/op
 BenchmarkNormalRegexp-8           711022             15823 ns/op
 PASS
-ok      github.com/tekintian/go-str-utils       128.967s
+ok      github.com/tekintian/gostrutils       128.967s
 ```
 
 说明:

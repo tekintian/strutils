@@ -162,6 +162,14 @@ func AnyToStr(value interface{}) string {
 	if value == nil {
 		return ""
 	}
+	// 先使用 type switch来判断数据类型
+	switch vt := value.(type) {
+	case string:
+		return vt
+	case []byte:
+		return string(vt)
+	}
+	// 使用 reflect反射方式 处理字符串
 	retStr := ""
 	// Indirect方法兼容指针或者值
 	vrt := reflect.Indirect(reflect.ValueOf(value))
@@ -177,7 +185,6 @@ func AnyToStr(value interface{}) string {
 			// 如果value实现了Stringer接口,则调用接口中的String()方法返回数据
 			return f.String()
 		}
-
 	case reflect.Map:
 		vmap := value.(map[string]interface{})
 		sb := strings.Builder{}
@@ -186,8 +193,17 @@ func AnyToStr(value interface{}) string {
 		}
 		str := sb.String()
 		retStr = str[:len(str)-1] // 删除最后一个空格
-	case reflect.String:
-		return value.(string)
+	// 注意 这里后面的 int,uint,float序列的最终效果和 fmt.Sprintf("%v", value) 的效果是一样的
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return strconv.FormatInt(vrt.Int(), 10)
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return strconv.FormatUint(vrt.Uint(), 10)
+	case reflect.Float64:
+		return strconv.FormatFloat(vrt.Float(), 'g', -1, 64)
+	case reflect.Float32:
+		return strconv.FormatFloat(vrt.Float(), 'g', -1, 32)
+	case reflect.Bool:
+		return strconv.FormatBool(vrt.Bool())
 	case reflect.Slice, reflect.Array:
 		retStr = fmt.Sprintf("%v", vrt.Interface())
 		retStr = strings.Trim(retStr, "[]") // 删除数组和切片数据中的[]

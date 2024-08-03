@@ -1,4 +1,4 @@
-module github.com/tekintian/go-str-utils
+module github.com/tekintian/gostrutils
 
 go 1.16
 
