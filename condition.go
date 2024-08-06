@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/url"
 	"strings"
+	"unicode/utf8"
 )
 
 // 字符串条件判断相关函数
@@ -154,9 +155,136 @@ func IsGbkStr(str string) bool {
 }
 
 // 验证是否有效的URL
-func IsValidUrl(urlStr string) bool {
+func IsValidUrl(urlStr string, schemes ...string) bool {
+	scheme := "https?"
+	if len(schemes) > 0 {
+		scheme = schemes[0]
+	}
 	ssurl, _ := url.PathUnescape(urlStr)
 	ssurl = strings.TrimSpace(ssurl)
-	regex, _ := GetRegexp(`^(https?:\/\/)?([\w\./&^#_!-=+$@~*?]+)`)
+	regex, _ := GetRegexp(fmt.Sprintf(`^(%s:\/\/)?([\w\./&^#_!-=+$@~*?]+)`, scheme))
 	return regex.MatchString(ssurl)
+}
+
+// IsUrl 字符串是否URL 优先通过url长度,基本规则和协议进行否点判断,最后通过正则进行判断
+func IsUrl(str string) bool {
+	if str == "" || len(str) <= 3 || utf8.RuneCountInString(str) >= 2083 || strings.HasPrefix(str, ".") {
+		return false
+	}
+	u, err := url.Parse(str)
+	//Couldn't even parse the url
+	if err != nil {
+		return false
+	}
+
+	//Invalid host
+	if u.Host == "" || strings.HasPrefix(u.Host, ".") || strings.HasSuffix(u.Host, ":") {
+		return false
+	}
+
+	//No Scheme found
+	if u.Scheme == "" {
+		return false
+	}
+
+	var inScheme bool
+	var schemes = []string{"http", "https", "ftp", "tcp", "udp", "ws", "wss", "irc", "rtmp"}
+	for _, s := range schemes {
+		if u.Scheme == s {
+			inScheme = true
+			break
+		}
+	}
+	if !inScheme {
+		return false
+	}
+
+	return IsValidUrl(str, u.Scheme)
+}
+
+// 判断字符串是否是ASCII字符串
+func IsASCII(str string) bool {
+	for _, v := range str {
+		// ASCII字符最大127 十六进制 '\u007F'; 大于127的字符都是非ASCII字符
+		// latin1 字符最大255 十六进制 '\u00FF'
+		if v > 127 {
+			return false
+		}
+	}
+	return true
+}
+
+// 通配符 * 问号 ? 匹配, 找出给定的输入字符串str是否与pattern字符串模式相匹配。
+//
+//		IsWmMatching  wildcard and mask pattern matching
+//	 str 要进行匹配的输入字符串
+//	 pattern 字符串匹配模式
+//
+//			通配符 星号'*' -> 星号匹配零个或多个字符。
+//			问号'?' -> 匹配任何单个字符。
+//
+// 如果str与pattern相匹配,则返回true, 否则返回false
+func IsWmMatching(str string, pattern string) bool {
+	rstrs := []rune(str)
+	rpats := []rune(pattern)
+
+	lenInput := len(rstrs)
+	lenPattern := len(rpats)
+
+	// 创建一个二维矩阵matrix，其中matrix[i][j] 如果输入字符串中的第一个i字符与模式中的第一个j字符匹配，则为真。
+	matrix := make([][]bool, lenInput+1)
+
+	for i := range matrix {
+		matrix[i] = make([]bool, lenPattern+1)
+	}
+
+	matrix[0][0] = true
+	for i := 1; i < lenInput; i++ {
+		matrix[i][0] = false
+	}
+
+	if lenPattern > 0 {
+		if rpats[0] == '*' {
+			matrix[0][1] = true
+		}
+	}
+
+	for j := 2; j <= lenPattern; j++ {
+		if rpats[j-1] == '*' {
+			matrix[0][j] = matrix[0][j-1]
+		}
+
+	}
+	for i := 1; i <= lenInput; i++ {
+		for j := 1; j <= lenPattern; j++ {
+
+			if rpats[j-1] == '*' {
+				matrix[i][j] = matrix[i-1][j] || matrix[i][j-1]
+			}
+
+			if rpats[j-1] == '?' || rstrs[i-1] == rpats[j-1] {
+				matrix[i][j] = matrix[i-1][j-1]
+			}
+		}
+	}
+	return matrix[lenInput][lenPattern]
+}
+
+// 星号模式匹配* 和问号模式匹配 ,将模式匹配字符串转换为正则后使用正则进行匹配
+// 这个的作用和上面的IsWmMatching 是一样的, 只不过这个函数采用的是正则方式进行模式匹配
+func IsWmMatchingReg(str, pattern string) bool {
+	// 模式匹配符 *, ? 转换为正则表达式, *替换为 (.*?), .需要进行转义为 \. ; 问号?转换为 (.?)
+	rp := strings.NewReplacer("*", `(.*?)`, ".", `\.`, "?", `(.?)`)
+	reg := rp.Replace(pattern) // 将v转换为正则表达式
+	// 如果正则中不包含前后限定符,则添加上
+	if !strings.HasPrefix(reg, "^") && !strings.HasSuffix(reg, "$") {
+		reg = fmt.Sprintf(`^%s$`, reg) // 在正则中增加前后限定符
+	}
+	// 正则对象获取
+	regex, err := GetRegexp(reg)
+	if err != nil {
+		return false
+	}
+	// 正则匹配
+	return regex.MatchString(str)
 }

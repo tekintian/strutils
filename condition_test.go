@@ -172,3 +172,24 @@ func TestIsGbk(t *testing.T) {
 		t.Log("ok")
 	}
 }
+
+func TestIsWmMatchingReg(t *testing.T) {
+	testCases := []struct {
+		str     string
+		pattern string
+		ret     bool
+	}{
+		{str: "https://www.tekin.cn", pattern: "*.tekin.cn", ret: true},
+		{str: "dev.tekin.cn", pattern: "www.tekin.cn", ret: false},
+		{str: "dev.tekin.cx", pattern: "dev.tekin.c?", ret: true},
+		{str: "dev.tekin.cxxyy", pattern: "dev.tekin.c?", ret: false},
+	}
+	for _, v := range testCases {
+		// ret := strutils.IsWmMatching(v.str, v.pattern)
+		ret := strutils.IsWmMatchingReg(v.str, v.pattern)
+		if ret != v.ret {
+			t.Fatalf("failed to match %v, expected %v, got %v", v.str, v.ret, ret)
+		}
+	}
+
+}
