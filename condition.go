@@ -288,3 +288,12 @@ func IsWmMatchingReg(str, pattern string) bool {
 	// 正则匹配
 	return regex.MatchString(str)
 }
+// 判断字符串a是否在list切片中
+func StrInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
