@@ -50,13 +50,20 @@ func Str2Uint(str string) uint {
 }
 
 // 字符串转uint切片
-func Str2UintSlice(str string) []uint {
+// str 要转换的字符串  如: "123,456"
+// seps 可选参数, 字符串中的切割分隔符,默认 逗号, 可以自行根据要切割转换的字符串指定
+// 返回按照指定的sep分隔符切割转换后的 uint切片
+func Str2UintSlice(str string, seps ...string) []uint {
 	ss := make([]uint, 0)
 	s := strings.TrimSpace(str)
 	if s == "" {
 		return ss
 	}
-	strSs := strings.Split(s, ",")
+	sep := "," // 默认分隔符 逗号
+	if len(seps) > 0 {
+		sep = seps[0]
+	}
+	strSs := strings.Split(s, sep)
 	for _, v := range strSs {
 		ss = append(ss, Str2Uint(v))
 	}
@@ -74,14 +81,20 @@ func Str2Int64(str string) int64 {
 }
 
 // 字符串转int切片
-// 这里先将字符串按照, 逗号切割为字符串切片,然后在进行匹配和转换
-func Str2IntSlice(str string) []int {
+// str 要转换的字符串  如: "123,456"
+// seps 可选参数, 字符串中的切割分隔符,默认 逗号, 可以自行根据要切割转换的字符串指定
+// 返回按照指定的sep分隔符切割转换后的 int切片
+func Str2IntSlice(str string, seps ...string) []int {
 	ss := make([]int, 0)
 	s := strings.TrimSpace(str)
 	if s == "" {
 		return ss
 	}
-	strSs := strings.Split(s, ",")
+	sep := "," // 默认分隔符 逗号
+	if len(seps) > 0 {
+		sep = seps[0]
+	}
+	strSs := strings.Split(s, sep)
 	for _, v := range strSs {
 		ss = append(ss, Str2Int(v))
 	}
@@ -89,14 +102,20 @@ func Str2IntSlice(str string) []int {
 }
 
 // 字符串转int64切片
-// 这里先将字符串按照, 逗号切割为字符串切片,然后在进行匹配和转换
-func Str2Int64Slice(str string) []int64 {
+// str 要转换的字符串  如: "123,456"
+// seps 可选参数, 字符串中的切割分隔符,默认 逗号, 可以自行根据要切割转换的字符串指定
+// 返回按照指定的sep分隔符切割转换后的 int64切片
+func Str2Int64Slice(str string, seps ...string) []int64 {
 	ss := make([]int64, 0)
 	s := strings.TrimSpace(str)
 	if s == "" {
 		return ss
 	}
-	strSs := strings.Split(s, ",")
+	sep := "," // 默认分隔符 逗号
+	if len(seps) > 0 {
+		sep = seps[0]
+	}
+	strSs := strings.Split(s, sep)
 	for _, v := range strSs {
 		ss = append(ss, Str2Int64(v))
 	}
@@ -289,8 +308,9 @@ func JsonStrToStruct(m string, dst interface{}) error {
 // TimeToStr 转换 时间字符串/时间戳/时间对象 到字符串
 // tval 要转换的时间对象,  时间戳(支持秒和毫秒), 时间字符串(注意,如果时间格式非默认的格式,需要指定时间格式)
 // layouts 可选的时间格式
-// 		默认输出字符串格式 "2006-01-02T15:04:05Z07:00",
-// 		默认tval字符串对应的时间格式 "2006-01-02 15:04:05"
+//
+//		默认输出字符串格式 "2006-01-02T15:04:05Z07:00",
+//		默认tval字符串对应的时间格式 "2006-01-02 15:04:05"
 //
 //	layouts可以传递多个时间格式参数,
 //		第一个为最终返回的字符串格式,默认"2006-01-02T15:04:05Z07:00"
@@ -370,7 +390,6 @@ func TsToStr(ts int64, layout string) string {
 	return t.Format(layout)
 }
 
-
 // NumberFormat 以千位分隔符方式格式化一个数字.
 // decimal为要保留的小数位数,point为小数点显示的字符,thousand为千位分隔符显示的字符.
 // 有效数值是长度(包括小数点)为17位之内的数值,最后一位会四舍五入.
@@ -414,4 +433,47 @@ func NumberFormat(number float64, decimal uint8, point, thousand string) string 
 	}
 
 	return s
+}
+
+// 解析字符串切片 到 map[string][]string 这个的应用场景通常是对权限验证字符串进行切割和转换
+//
+//		strs 要进行切割转换的字符串切片 , 如: []string{"/api/login:GET,POST"}
+//		options 字符串切割可选项,可以传3个可选项参数:
+//		 	第一个是字符串的key和值的分隔符 默认 分号 :
+//			第二个是第一个分割后的值的分隔符, 默认 逗号 ,
+//	 	第二个是分割后的key/val值的trim 字符, 默认 空格
+//
+//	 返回 map[string][]string  如: mps["/api/login"]=[]string{"GET","POST"}
+//
+// @author tekintian <tekintian@gmail.com>
+func ParseStrsToMapStrStrSlice(strs []string, options ...string) map[string][]string {
+	mps := make(map[string][]string) // 定义要返回的map对象
+	var sepKv, sepV, cutStr string   // 默认移除的字符串 空白字符
+	// 可选参数赋值
+	switch len(options) {
+	case 0: // 默认的字符串切割规则 即没有options参数的情况
+		sepKv = ":"
+		sepV = ","
+		cutStr = " "
+	case 1:
+		sepKv = options[0]
+	case 2:
+		sepKv = options[0]
+		sepV = options[1]
+	case 3:
+		sepKv = options[0]
+		sepV = options[1]
+		cutStr = options[2]
+	}
+
+	for _, str := range strs {
+		kvals := strings.Split(str, sepKv) // 这里使用 sepKv 分字符串进行分割为 key 和vals
+		if len(kvals) != 2 {
+			continue // 跳过不符合规则的内容
+		}
+		key := strings.Trim(kvals[0], cutStr)           // 第一部分为map的key
+		vals := StrSplitAndTrim(kvals[1], sepV, cutStr) // 这个是vals的值,使用 sepV对其进行分割并去除 cutStr
+		mps[key] = vals
+	}
+	return mps
 }
