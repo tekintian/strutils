@@ -2,6 +2,7 @@
 package strutils
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,3 +26,22 @@ func TrimAppPath(inPath string) string {
 	}
 	return inPath
 }
+
+// 获取inPath的绝对路径 会替换路径中的变量 ${var} 或者 $var 为环境变量的值
+func AbsPathify(inPath string) string {
+	if inPath == "$HOME" || strings.HasPrefix(inPath, "$HOME"+string(os.PathSeparator)) {
+		homeDir, _ := os.UserHomeDir()
+		inPath = homeDir + inPath[5:]
+	}
+	inPath = os.ExpandEnv(inPath) // 替换路径中的环境变量
+	if filepath.IsAbs(inPath) {
+		return filepath.Clean(inPath)
+	}
+	p, err := filepath.Abs(inPath)
+	if err == nil {
+		return filepath.Clean(p)
+	}
+	log.Printf("could not discover absolute path: %v", err.Error())
+	return ""
+}
+
