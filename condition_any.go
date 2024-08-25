@@ -9,6 +9,9 @@ import (
 // 是零值返回 true  否则返回 false; 空字符串,number类型 0 , 引用类型 nil,时间类型空值 都返回true
 // @author tekintian <tekintian@gmail.com>
 func AnyIsBlank(val interface{}) bool {
+	if val == nil {
+		return true
+	}
 	rv := reflect.ValueOf(val)
 	switch rv.Kind() {
 	case reflect.String:
