@@ -49,6 +49,11 @@ func Str2Uint(str string) uint {
 	return uint(parseStrToInt64(str))
 }
 
+// 字符串转uint64
+func Str2Uint64(str string) uint64 {
+	return uint64(parseStrToInt64(str))
+}
+
 // 字符串转uint切片
 // str 要转换的字符串  如: "123,456"
 // seps 可选参数, 字符串中的切割分隔符,默认 逗号, 可以自行根据要切割转换的字符串指定
